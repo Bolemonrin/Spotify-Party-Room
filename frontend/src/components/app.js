@@ -10,11 +10,10 @@ import {
   Routes,
   Link,
   Navigate,
-  useNavigate,
 } from "react-router-dom";
 import { Button, Grid, ButtonGroup, Typography } from "@mui/material";
 
-function Home() {
+function App() {
   // const navigate = useNavigate();
   const [roomCode, setRoomCode] = useState(null);
 
@@ -61,7 +60,6 @@ function Home() {
     <Router>
       <Routes>
         <Route
-          exact
           path="/"
           element={
             roomCode ? <Navigate to={`/room/${roomCode}`} /> : renderHomePage()
@@ -78,4 +76,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default App;
