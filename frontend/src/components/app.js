@@ -1,26 +1,81 @@
 /** @format */
 
-import React, { Component } from "react";
-import { createRoot } from "react-dom/client";
-import Home from "./Home";
-import "../../static/css/index.css";
-// console.log("Imported styles", styles);
+import React, { useState, useEffect } from "react";
+import CreateRoom from "./CreateRoom";
+import JoinRoom from "./JoinRoom";
+import Room from "./Room";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
+import { Button, Grid, ButtonGroup, Typography } from "@mui/material";
 
-class App extends Component {
-	constructor(props) {
-		super(props);
-	}
+function Home() {
+  // const navigate = useNavigate();
+  const [roomCode, setRoomCode] = useState(null);
 
-	render() {
-		return (
-			<div className="center">
-				<Home />
-			</div>
-		);
-	}
+  useEffect(() => {
+    fetch("/api/user-in-room")
+      .then((res) => res.json())
+      .then((data) => setRoomCode(data.code));
+  }, [roomCode]);
+
+  const renderHomePage = () => {
+    return (
+      <Grid
+        container
+        spacing={3}
+        sx={{
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        direction="column"
+      >
+        <Grid>
+          <Typography variant="h3" component="h3">
+            House Party
+          </Typography>
+        </Grid>
+        <Grid>
+          <ButtonGroup disableElevation variant="contained" color="primary">
+            <Button color="primary" to="/join" component={Link}>
+              Join a Room
+            </Button>
+            <Button color="secondary" to="/create" component={Link}>
+              Create a Room
+            </Button>
+          </ButtonGroup>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  const clearRoomCode = () => {
+    setRoomCode(null);
+  };
+  return (
+    <Router>
+      <Routes>
+        <Route
+          exact
+          path="/"
+          element={
+            roomCode ? <Navigate to={`/room/${roomCode}`} /> : renderHomePage()
+          }
+        />
+        <Route path="/join" element={<JoinRoom />} />
+        <Route path="/create" element={<CreateRoom />} />
+        <Route
+          path="/room/:roomCode"
+          element={<Room leaveRoomCallback={clearRoomCode} />}
+        />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App;
-
-const appDiv = createRoot(document.getElementById("app"));
-appDiv.render(<App />);
+export default Home;

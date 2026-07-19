@@ -16,6 +16,11 @@ module.exports = {
           loader: "babel-loader",
         },
       },
+      {
+        // style-loader injects CSS into the DOM; css-loader resolves the import
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
     ],
   },
   optimization: {
@@ -30,3 +35,26 @@ module.exports = {
     }),
   ],
 };
+
+// const path = require("path");
+
+// module.exports = {
+//   entry: "./src/index.js",
+//   output: {
+//     path: path.resolve(__dirname, "./static/frontend"),
+//     filename: "[name].js",
+//   },
+//   module: {
+//     rules: [
+//       {
+//         test: /\.js$/,
+//         exclude: /node_modules/,
+//         use: { loader: "babel-loader" },
+//       },
+//       {
+//         test: /\.css$/,
+//         use: ["style-loader", "css-loader"],
+//       },
+//     ],
+//   },
+// };

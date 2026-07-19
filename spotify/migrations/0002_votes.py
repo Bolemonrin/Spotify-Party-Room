@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0002_alter_room_code'),
+        ('api', '0001_initial'),
         ('spotify', '0001_initial'),
     ]
 
