@@ -15,6 +15,8 @@ import {
   Collapse,
   Alert,
 } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import type { CreateRoomProps } from '../types';
 // import Button from "@mui/material/Button";
 // import Grid from "@mui/material/Grid2";
 // import Typography from "@mui/material/Typography";
@@ -25,18 +27,17 @@ import {
 // import Radio from "@mui/material/Radio";
 // import RadioGroup from "@mui/material/RadioGroup";
 // import Input from "@mui/material/Input";
-// import { Link, useNavigate } from "react-router-dom";
+
 // import Collapse from "@mui/material/Collapse";
 // import Alert from "@mui/material/Alert";
 
 function CreateRoom({
   update,
-  handleUpdate,
   updateCallback,
   roomCode,
   guestCont,
   skipVotes,
-}) {
+}: CreateRoomProps) {
   const navigate = useNavigate();
   const [votesToSkip, setVotesToSkip] = useState(skipVotes || 2);
   const [guestControl, setGuestControl] = useState(
@@ -45,11 +46,11 @@ function CreateRoom({
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  const handleVotesChange = (e) => {
-    setVotesToSkip(e.target.value);
+  const handleVotesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVotesToSkip(Number(e.target.value));
   };
 
-  const handleGuestControlChange = (e) => {
+  const handleGuestControlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGuestControl(e.target.value === "true" ? true : false);
   };
 
@@ -97,7 +98,7 @@ function CreateRoom({
         else setErrMsg("Error updating room!");
       })
       .catch((err) => console.error("Error creating room:", err))
-      .finally(() => updateCallback());
+      .finally(() => updateCallback?.());
   };
 
   const renderCreateBtn = () => {
@@ -143,7 +144,6 @@ function CreateRoom({
         alignItems: "center",
         justifyContent: "center",
       }}
-      direction="column"
     >
       <Grid>
         <Collapse in={errMsg != "" || successMsg != ""}>

@@ -9,7 +9,7 @@ function JoinRoom() {
   const [roomCode, setRoomCode] = useState("");
   const [error, setError] = useState("");
 
-  const handleTextFieldChange = (e) => {
+  const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomCode(e.target.value);
   };
 
@@ -38,7 +38,6 @@ function JoinRoom() {
         alignItems: "center",
         justifyContent: "center",
       }}
-      direction="column"
     >
       <Grid>
         <Typography variant="h4" component="h4">
@@ -47,7 +46,7 @@ function JoinRoom() {
       </Grid>
       <Grid>
         <TextField
-          error={error}
+          error
           label="Room Code"
           placeholder="Enter Room Code"
           value={roomCode}

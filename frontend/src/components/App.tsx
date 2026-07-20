@@ -15,7 +15,7 @@ import { Button, Grid, ButtonGroup, Typography } from "@mui/material";
 
 function App() {
   // const navigate = useNavigate();
-  const [roomCode, setRoomCode] = useState(null);
+  const [roomCode, setRoomCode] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/user-in-room")
@@ -32,7 +32,6 @@ function App() {
           alignItems: "center",
           justifyContent: "center",
         }}
-        direction="column"
       >
         <Grid>
           <Typography variant="h3" component="h3">

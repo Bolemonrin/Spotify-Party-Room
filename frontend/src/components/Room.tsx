@@ -5,8 +5,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Grid, Typography, Button, CircularProgress } from "@mui/material";
 import CreateRoom from "./CreateRoom";
 import MusicPlayer from "./MusicPlayer";
+import type { RoomProps, MusicPlayerProps } from "../types";
 
-function Room({ leaveRoomCallback }) {
+function Room({ leaveRoomCallback }: RoomProps) {
   const navigate = useNavigate();
 
   const [votesToSkip, setVotesToSkip] = useState(2);
@@ -14,9 +15,9 @@ function Room({ leaveRoomCallback }) {
   const [isHost, setIsHost] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  const [update, setUpdate] = useState(false);
+  // const [update, setUpdate] = useState(false);
   const [spotifyAuth, setSpotifyAuth] = useState(false);
-  const [song, setSong] = useState({});
+  const [song, setSong] = useState<MusicPlayerProps | null>(null);
 
   const { roomCode } = useParams();
   // console.log("Room mounted with roomcode:", roomCode);
@@ -89,18 +90,19 @@ function Room({ leaveRoomCallback }) {
     });
   };
 
-  const updateShowSettings = (e) => {
+  const updateShowSettings = (e: boolean) => {
     setShowSettings(e);
   };
 
-  const handleUpdate = (val) => {
-    setUpdate(val);
-  };
+  // const handleUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const val = e.target.value === "true" ? true : false;
+  //   setUpdate(val);
+  // };
 
   const getCurrSong = () => {
     fetch("/spotify/current-song")
       .then((res) => {
-        if (!res.ok) return {};
+        if (!res.ok) return null;
         return res.json();
       })
       .then((data) => {
@@ -136,7 +138,7 @@ function Room({ leaveRoomCallback }) {
         <Grid>
           <CreateRoom
             update={true}
-            handleUpdate={handleUpdate}
+            // handleUpdate={handleUpdate}
             updateCallback={getRoomDetails}
             roomCode={roomCode}
             guestCont={guestControl}
@@ -178,7 +180,6 @@ function Room({ leaveRoomCallback }) {
         alignItems: "center",
         justifyContent: "center",
       }}
-      direction="column"
     >
       {showSettings ? (
         renderSettings()
@@ -192,7 +193,6 @@ function Room({ leaveRoomCallback }) {
               alignItems: "center",
               justifyContent: "center",
             }}
-            direction="column"
           >
             {isLoading ? (
               <Grid>
@@ -207,7 +207,7 @@ function Room({ leaveRoomCallback }) {
                   <Typography variant="h4" component="h4">
                     Code: {roomCode}
                   </Typography>
-                  <MusicPlayer {...song} />
+                  {song && <MusicPlayer {...song} />}
                 </Grid>
                 {isHost ? renderSettingsBtn() : null}
                 <Grid>

@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    /* Language & environment */
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "useDefineForClassFields": true,
+
+    /* Modules — Vite/bundler settings */
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+
+    /* Vite does the transpiling; TS is only a type-checker here */
+    "noEmit": true,
+    "skipLibCheck": true,
+
+    /* KEY for migration: let .jsx and .tsx live side by side */
+    "allowJs": true,
+    "checkJs": false,
+
+    /* Type-safety */
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Relaxed while migrating (WIP code has unused vars) — flip to true when done */
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src"]
+}
