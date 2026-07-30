@@ -1,11 +1,19 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Grid, Typography, Button, CircularProgress } from "@mui/material";
+import {
+  Typography,
+  Button,
+  CircularProgress,
+  Stack,
+  Paper,
+  Box,
+} from "@mui/material";
 import CreateRoom from "./CreateRoom";
 import MusicPlayer from "./MusicPlayer";
 import type { RoomProps, MusicPlayerProps } from "../types";
+import { glassCard, gradientText } from "../theme";
 
 function Room({ leaveRoomCallback }: RoomProps) {
   const navigate = useNavigate();
@@ -15,20 +23,16 @@ function Room({ leaveRoomCallback }: RoomProps) {
   const [isHost, setIsHost] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  // const [update, setUpdate] = useState(false);
   const [spotifyAuth, setSpotifyAuth] = useState(false);
   const [song, setSong] = useState<MusicPlayerProps | null>(null);
 
   const { roomCode } = useParams();
-  // console.log("Room mounted with roomcode:", roomCode);
 
   const getRoomDetails = () => {
     if (!roomCode || roomCode === "undefined") {
       console.error("Room Code is undefined or invalid!");
       return;
     }
-
-    // console.log("Fetching room details for code:", roomCode); // Debug log
     setIsLoading(true);
 
     fetch(`/api/get-room?code=${roomCode}`)
@@ -43,31 +47,23 @@ function Room({ leaveRoomCallback }: RoomProps) {
       })
       .then((data) => {
         if (!data) return;
-        // console.log("Room data received:", data);
         setGuestControl(data.guest_can_pause);
         setVotesToSkip(data.votes_to_skip);
         setIsHost(data.is_host);
         if (data.is_host) authSpotify();
         setIsLoading(false);
-
-        // console.log("inside .then data");
-        // console.log(isLoading);
-        // console.log(data.guest_can_control);
       })
       .catch((error) => {
         console.error("Error fetching room details:", error);
         setIsLoading(false);
-        // Keep default state values on error
       });
   };
 
   const authSpotify = () => {
-    // console.log("Authenticating Spotify...");
     fetch("/spotify/is-authenticated")
       .then((res) => res.json())
       .then((data) => {
         setSpotifyAuth(data.status);
-        // console.log("Spotify auth status:", data.status);
         if (!data.status) {
           fetch("/spotify/get-auth-url")
             .then((res) => res.json())
@@ -83,21 +79,15 @@ function Room({ leaveRoomCallback }: RoomProps) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     };
-
-    fetch("/api/leave-room", request).then((res) => {
+    fetch("/api/leave-room", request).then(() => {
       leaveRoomCallback();
       navigate("/");
     });
   };
 
-  const updateShowSettings = (e: boolean) => {
-    setShowSettings(e);
+  const updateShowSettings = (value: boolean) => {
+    setShowSettings(value);
   };
-
-  // const handleUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const val = e.target.value === "true" ? true : false;
-  //   setUpdate(val);
-  // };
 
   const getCurrSong = () => {
     fetch("/spotify/current-song")
@@ -107,17 +97,14 @@ function Room({ leaveRoomCallback }: RoomProps) {
       })
       .then((data) => {
         setSong(data);
-        // console.log("Current song:", data);
       });
   };
 
   useEffect(() => {
-    // console.log("useEffect triggered with roomCode:", roomCode); // Debug log
-
     if (roomCode) getRoomDetails();
     else console.log("roomCode is undefined, not fetching");
 
-    let interval = null;
+    let interval: ReturnType<typeof setInterval> | null = null;
     if (spotifyAuth) {
       getCurrSong();
       interval = setInterval(getCurrSong, 1000);
@@ -127,104 +114,75 @@ function Room({ leaveRoomCallback }: RoomProps) {
     };
   }, [roomCode, navigate, leaveRoomCallback, spotifyAuth]);
 
-  // Only try to convert to string if not loading and values exist
-  const guestControlString =
-    guestControl !== undefined ? guestControl.toString() : "loading...";
-  const isHostString = isHost !== undefined ? isHost.toString() : "loading...";
-
-  const renderSettings = () => {
+  // Settings view: CreateRoom brings its own card, so no extra wrapper here
+  if (showSettings) {
     return (
-      <>
-        <Grid>
-          <CreateRoom
-            update={true}
-            // handleUpdate={handleUpdate}
-            updateCallback={getRoomDetails}
-            roomCode={roomCode}
-            guestCont={guestControl}
-            skipVotes={votesToSkip}
-          />
-        </Grid>
-        <Grid>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => updateShowSettings(false)}
-          >
-            Close
-          </Button>
-        </Grid>
-      </>
-    );
-  };
-
-  const renderSettingsBtn = () => {
-    return (
-      <Grid>
+      <Stack spacing={2} sx={{ alignItems: "center", width: "100%" }}>
+        <CreateRoom
+          update={true}
+          updateCallback={getRoomDetails}
+          roomCode={roomCode}
+          guestCont={guestControl}
+          skipVotes={votesToSkip}
+        />
         <Button
-          variant="contained"
-          color="primary"
-          onClick={() => updateShowSettings(true)}
+          variant="outlined"
+          color="secondary"
+          onClick={() => updateShowSettings(false)}
         >
-          Settings
+          Close
         </Button>
-      </Grid>
+      </Stack>
     );
-  };
+  }
 
   return (
-    <Grid
-      container
-      spacing={1}
-      sx={{
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+    <Paper
+      elevation={0}
+      sx={{ ...glassCard, maxWidth: 480, width: "100%", textAlign: "center" }}
     >
-      {showSettings ? (
-        renderSettings()
+      {isLoading ? (
+        <Stack spacing={2} sx={{ alignItems: "center" }}>
+          <CircularProgress color="primary" />
+          <Typography variant="body1">Loading room details…</Typography>
+        </Stack>
       ) : (
-        <>
-          <Grid
-            container
-            spacing={1}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {isLoading ? (
-              <Grid>
-                <CircularProgress />
-                <Typography variant="body1" sx={{ mt: 2 }}>
-                  Loading room details...
-                </Typography>
-              </Grid>
+        <Stack spacing={2.5} sx={{ alignItems: "center" }}>
+          <Typography variant="h4" component="h1" sx={gradientText}>
+            Room {roomCode}
+          </Typography>
+
+          <Box sx={{ width: "100%" }}>
+            {song ? (
+              <MusicPlayer {...song} />
             ) : (
-              <>
-                <Grid>
-                  <Typography variant="h4" component="h4">
-                    Code: {roomCode}
-                  </Typography>
-                  {song && <MusicPlayer {...song} />}
-                </Grid>
-                {isHost ? renderSettingsBtn() : null}
-                <Grid>
-                  <Button
-                    variant="contained"
-                    onClick={leaveBtnPressed}
-                    color="secondary"
-                  >
-                    Leave Room
-                  </Button>
-                </Grid>
-              </>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                Nothing playing yet — start a track in Spotify.
+              </Typography>
             )}
-          </Grid>
-        </>
+          </Box>
+
+          <Stack direction="row" spacing={1.5}>
+            {isHost && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => updateShowSettings(true)}
+              >
+                Settings
+              </Button>
+            )}
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={leaveBtnPressed}
+            >
+              Leave Room
+            </Button>
+          </Stack>
+        </Stack>
       )}
-    </Grid>
+    </Paper>
   );
 }
 

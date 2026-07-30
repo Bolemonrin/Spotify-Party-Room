@@ -1,11 +1,9 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
-  Grid,
   Typography,
-  TextField,
   FormHelperText,
   FormControl,
   FormControlLabel,
@@ -14,22 +12,12 @@ import {
   Input,
   Collapse,
   Alert,
+  Stack,
+  Paper,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import type { CreateRoomProps } from '../types';
-// import Button from "@mui/material/Button";
-// import Grid from "@mui/material/Grid2";
-// import Typography from "@mui/material/Typography";
-// import TextField from "@mui/material/TextField";
-// import FormHelperText from "@mui/material/FormHelperText";
-// import FormControl from "@mui/material/FormControl";
-// import FormControlLabel from "@mui/material/FormControlLabel";
-// import Radio from "@mui/material/Radio";
-// import RadioGroup from "@mui/material/RadioGroup";
-// import Input from "@mui/material/Input";
-
-// import Collapse from "@mui/material/Collapse";
-// import Alert from "@mui/material/Alert";
+import type { CreateRoomProps } from "../types";
+import { glassCard, gradientText } from "../theme";
 
 function CreateRoom({
   update,
@@ -56,9 +44,8 @@ function CreateRoom({
 
   const handleRoomBtnPresses = () => {
     localStorage.removeItem("roomCode");
-    // console.log({ votesToSkip, guestControl });
     const request = {
-      method: "Post",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         votes_to_skip: votesToSkip,
@@ -69,7 +56,6 @@ function CreateRoom({
     fetch("/api/create", request)
       .then((res) => res.json())
       .then((data) => {
-        // console.log("Room creation response:", data); // Debugging
         if (data.code) {
           localStorage.setItem("roomCode", data.code);
           navigate("/room/" + data.code);
@@ -81,7 +67,6 @@ function CreateRoom({
   };
 
   const handleUpdateRoomBtnPress = () => {
-    // console.log({ votesToSkip, guestControl });
     const request = {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -97,57 +82,46 @@ function CreateRoom({
         if (res.ok) setSuccessMsg("Room updated successfully!");
         else setErrMsg("Error updating room!");
       })
-      .catch((err) => console.error("Error creating room:", err))
+      .catch((err) => console.error("Error updating room:", err))
       .finally(() => updateCallback?.());
   };
 
-  const renderCreateBtn = () => {
-    return (
-      <>
-        <Grid>
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={handleRoomBtnPresses}
-          >
-            Create A Room
-          </Button>
-        </Grid>
-        <Grid>
-          <Button color="secondary" variant="contained" to="/" component={Link}>
-            Back
-          </Button>
-        </Grid>
-      </>
-    );
-  };
+  const renderCreateBtn = () => (
+    <Stack direction="row" spacing={1.5}>
+      <Button
+        color="primary"
+        variant="contained"
+        onClick={handleRoomBtnPresses}
+      >
+        Create a Room
+      </Button>
+      <Button color="secondary" variant="outlined" to="/" component={Link}>
+        Back
+      </Button>
+    </Stack>
+  );
 
-  const renderUpdateBtn = () => {
-    return (
-      <Grid>
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={handleUpdateRoomBtnPress}
-        >
-          Update Room
-        </Button>
-      </Grid>
-    );
-  };
+  const renderUpdateBtn = () => (
+    <Button
+      color="primary"
+      variant="contained"
+      onClick={handleUpdateRoomBtnPress}
+    >
+      Update Room
+    </Button>
+  );
 
   return (
-    <Grid
-      container
-      spacing={1}
-      sx={{
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+    <Paper
+      elevation={0}
+      sx={{ ...glassCard, maxWidth: 460, width: "100%", textAlign: "center" }}
     >
-      <Grid>
-        <Collapse in={errMsg != "" || successMsg != ""}>
-          {successMsg != "" ? (
+      <Stack spacing={3} sx={{ alignItems: "center" }}>
+        <Collapse
+          in={errMsg !== "" || successMsg !== ""}
+          sx={{ width: "100%" }}
+        >
+          {successMsg !== "" ? (
             <Alert severity="success" onClose={() => setSuccessMsg("")}>
               {successMsg}
             </Alert>
@@ -157,23 +131,20 @@ function CreateRoom({
             </Alert>
           )}
         </Collapse>
-      </Grid>
-      <Grid>
-        <Typography component="h4" variant="h4">
-          {update ? "Update Room" : "Create A Room"}
+
+        <Typography variant="h4" component="h1" sx={gradientText}>
+          {update ? "Update Room" : "Create a Room"}
         </Typography>
-      </Grid>
-      <Grid>
+
         <FormControl component="fieldset">
-          <FormHelperText>
-            <span style={{ alignItems: "center" }}>
-              Guest Control of Playback State
-            </span>
+          <FormHelperText sx={{ textAlign: "center", mb: 0.5 }}>
+            Guest Control of Playback State
           </FormHelperText>
           <RadioGroup
             row
             value={guestControl.toString()}
             onChange={handleGuestControlChange}
+            sx={{ justifyContent: "center" }}
           >
             <FormControlLabel
               value="true"
@@ -189,28 +160,23 @@ function CreateRoom({
             />
           </RadioGroup>
         </FormControl>
-      </Grid>
-      <Grid>
+
         <FormControl>
           <Input
-            required={true}
+            required
             type="number"
             value={votesToSkip}
-            inputProps={{
-              min: 1,
-              style: { textAlign: "center" },
-            }}
+            inputProps={{ min: 1, style: { textAlign: "center" } }}
             onChange={handleVotesChange}
           />
-          <FormHelperText>
-            <span style={{ alignItems: "center" }}>
-              Votes Required To Skip Song
-            </span>
+          <FormHelperText sx={{ textAlign: "center" }}>
+            Votes Required To Skip Song
           </FormHelperText>
         </FormControl>
-      </Grid>
-      {update ? renderUpdateBtn() : renderCreateBtn()}
-    </Grid>
+
+        {update ? renderUpdateBtn() : renderCreateBtn()}
+      </Stack>
+    </Paper>
   );
 }
 

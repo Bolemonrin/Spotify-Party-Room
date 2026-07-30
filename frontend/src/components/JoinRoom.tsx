@@ -1,8 +1,9 @@
 /** @format */
 
-import React, { Component, useState } from "react";
-import { Button, TextField, Typography, Grid } from "@mui/material";
+import React, { useState } from "react";
+import { Button, TextField, Typography, Stack, Paper } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
+import { glassCard, gradientText } from "../theme";
 
 function JoinRoom() {
   const navigate = useNavigate();
@@ -30,40 +31,40 @@ function JoinRoom() {
       })
       .catch((err) => console.log(err));
   };
+
   return (
-    <Grid
-      container
-      spacing={1}
-      sx={{
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+    <Paper
+      elevation={0}
+      sx={{ ...glassCard, maxWidth: 440, width: "100%", textAlign: "center" }}
     >
-      <Grid>
-        <Typography variant="h4" component="h4">
-          Join Room
+      <Stack spacing={3} sx={{ alignItems: "center" }}>
+        <Typography variant="h4" component="h1" sx={gradientText}>
+          Join a Room
         </Typography>
-      </Grid>
-      <Grid>
         <TextField
-          error
+          error={error !== ""}
           label="Room Code"
-          placeholder="Enter Room Code"
+          placeholder="Enter room code"
           value={roomCode}
           helperText={error}
           variant="outlined"
           onChange={handleTextFieldChange}
+          sx={{ width: "100%", maxWidth: 260 }}
         />
-      </Grid>
-      <Grid>
-        <Button variant="contained" color="primary" onClick={roomButtonPressed}>
-          Enter Room
-        </Button>
-        <Button variant="contained" color="secondary" to="/" component={Link}>
-          Leave
-        </Button>
-      </Grid>
-    </Grid>
+        <Stack direction="row" spacing={1.5}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={roomButtonPressed}
+          >
+            Enter Room
+          </Button>
+          <Button variant="outlined" color="secondary" to="/" component={Link}>
+            Back
+          </Button>
+        </Stack>
+      </Stack>
+    </Paper>
   );
 }
 
