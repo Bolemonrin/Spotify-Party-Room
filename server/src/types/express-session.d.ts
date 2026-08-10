@@ -5,6 +5,6 @@ declare module "express-session" {
     roomCode?: string;
     guestCanPause?: boolean
     votesToSkip?: number
-    
+    spotifyAuthState?: string;
   }
 }
