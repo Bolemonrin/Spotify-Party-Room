@@ -6,7 +6,11 @@ import {
   LinearProgress,
   Box,
 } from "@mui/material";
-import { PlayArrow, Pause, SkipNext } from "@mui/icons-material";
+// Path imports, not the barrel: `from "@mui/icons-material"` pulls in ~6000
+// modules, which slows dev startup and exhausts file handles under test.
+import PlayArrow from "@mui/icons-material/PlayArrow";
+import Pause from "@mui/icons-material/Pause";
+import SkipNext from "@mui/icons-material/SkipNext";
 import type { MusicPlayerProps } from "../types";
 
 function MusicPlayer({
@@ -37,10 +41,10 @@ function MusicPlayer({
 
   const skipSong = () => {
     const req = {
-      method: "PUT",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
     };
-    fetch("/spotify/song_control", req).then((res) => res.json());
+    fetch("/spotify/skip", req).then((res) => res.json());
   };
 
   const btnControl = () => {
