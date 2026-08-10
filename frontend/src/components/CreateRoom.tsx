@@ -53,7 +53,7 @@ function CreateRoom({
       }),
     };
 
-    fetch("/room/create", request)
+    fetch("/api/room/create", request)
       .then((res) => res.json())
       .then((data) => {
         if (data.code) {
@@ -77,7 +77,7 @@ function CreateRoom({
       }),
     };
 
-    fetch("/room/update-room", request)
+    fetch("/api/room/update-room", request)
       .then((res) => {
         if (res.ok) setSuccessMsg("Room updated successfully!");
         else setErrMsg("Error updating room!");

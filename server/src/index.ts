@@ -2,6 +2,8 @@ import express from "express";
 import session from "express-session";
 import type { Request, Response } from "express";
 import roomRoutes from "./routes/room.js";
+import spotifyRoutes from "./routes/spotify.js";
+import * as spotifyController from "./controllers/spotifyController.js";
 
 const app = express();
 
@@ -30,7 +32,13 @@ app.use(
 
 const port = process.env.PORT || 3000;
 
-app.use("/room", roomRoutes);
+// Namespaced under /api so it cannot collide with the client-side /room/:code route
+app.use("/api/room", roomRoutes);
+app.use("/spotify", spotifyRoutes);
+
+// Mounted at the root because it must match REDIRECT_URI exactly, and Spotify
+// compares the value byte-for-byte against the registered redirect URI.
+app.get("/callback", spotifyController.spotifyCallback);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

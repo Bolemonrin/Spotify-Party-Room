@@ -6,7 +6,7 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const ROOM_CODE_LENGTH = 6;
 const MAX_ATTEMPTS = 5;
 
-function generateRoomCode(): string {
+export function generateRoomCode(): string {
   let code = "";
   for (let i = 0; i < ROOM_CODE_LENGTH; i++) {
     code += ALPHABET[randomInt(ALPHABET.length)];
