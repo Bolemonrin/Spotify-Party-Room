@@ -8,7 +8,7 @@ type RoomFields = {
   createdAt: Date;
 };
 
-function toRoomResponse(room: RoomFields, isHost: boolean) {
+export function toRoomResponse(room: RoomFields, isHost: boolean) {
   return {
     code: room.code,
     votes_to_skip: room.votesToSkip,
