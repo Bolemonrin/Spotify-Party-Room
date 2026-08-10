@@ -13,7 +13,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       // Django runserver defaults to 127.0.0.1:8000
-      '/api': {
+      '/room': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },

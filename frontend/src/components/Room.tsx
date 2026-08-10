@@ -35,7 +35,7 @@ function Room({ leaveRoomCallback }: RoomProps) {
     }
     setIsLoading(true);
 
-    fetch(`/api/get-room?code=${roomCode}`)
+    fetch(`/room/get-room?code=${roomCode}`)
       .then((res) => {
         if (!res.ok) {
           console.error("Room not found, redirecting...");
@@ -79,7 +79,7 @@ function Room({ leaveRoomCallback }: RoomProps) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     };
-    fetch("/api/leave-room", request).then(() => {
+    fetch("/room/leave-room", request).then(() => {
       leaveRoomCallback();
       navigate("/");
     });

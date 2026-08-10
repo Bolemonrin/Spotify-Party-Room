@@ -26,7 +26,7 @@ function App() {
   const [roomCode, setRoomCode] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/user-in-room")
+    fetch("/room/user-in-room")
       .then((res) => res.json())
       .then((data) => setRoomCode(data.code));
   }, [roomCode]);

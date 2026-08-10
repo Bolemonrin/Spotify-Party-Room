@@ -44,3 +44,10 @@ frontend/static/frontend/
 *.swp
 .DS_Store
 Thumbs.db
+
+# ---- Miscellaneous ----
+.agents/
+.claude/
+.windsurf/
+/server/src/generated/prisma
+

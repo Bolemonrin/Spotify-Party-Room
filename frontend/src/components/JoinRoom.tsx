@@ -21,7 +21,7 @@ function JoinRoom() {
       body: JSON.stringify({ code: roomCode }),
     };
 
-    fetch("/api/join", request)
+    fetch("/room/join", request)
       .then((res) => {
         if (res.ok) {
           navigate(`/room/${roomCode}`);

@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SpotifyToken {
+  id            Int         @id @default(autoincrement())
+  user          String      @unique @db.VarChar(50)
+  createdAt     DateTime    @default(now())
+  refreshToken  String      
+  accessToken   String      
+  expiresAt     DateTime
+  tokenType     String      @db.VarChar(50)
+}
+
+model Room {
+  id              Int       @id @default(autoincrement())
+  code            String    @unique @db.VarChar(10)
+  host            String    @unique @db.VarChar(50)
+  guestCanPause   Boolean   @default(false)
+  votesToSkip     Int       @default(1)
+  currentSong     String?   @db.VarChar(50)
+  createdAt       DateTime  @default(now())
+  votes           Vote[]
+}
+
+model Vote {
+  id          Int       @id @default(autoincrement())
+  user        String    @db.VarChar(50)
+  roomId      Int
+  room        Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  songId      String    @db.VarChar(100)
+  createdAt   DateTime  @default(now())
+
+  @@unique([roomId, user, songId])
+}
