@@ -13,6 +13,7 @@ import {
 import CreateRoom from "./CreateRoom";
 import MusicPlayer from "./MusicPlayer";
 import type { RoomProps, MusicPlayerProps } from "../types";
+import { logPress } from "../debug";
 import { glassCard, gradientText } from "../theme";
 
 function Room({ leaveRoomCallback }: RoomProps) {
@@ -75,6 +76,7 @@ function Room({ leaveRoomCallback }: RoomProps) {
   };
 
   const leaveBtnPressed = () => {
+    logPress("leave-room", { roomCode });
     const request = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -86,6 +88,7 @@ function Room({ leaveRoomCallback }: RoomProps) {
   };
 
   const updateShowSettings = (value: boolean) => {
+    logPress("settings", { open: value });
     setShowSettings(value);
   };
 
@@ -96,7 +99,10 @@ function Room({ leaveRoomCallback }: RoomProps) {
         return res.json();
       })
       .then((data) => {
-        setSong(data);
+        // The server answers 200 { is_playing: false } when the host's player
+        // is idle — no track to show, so keep the placeholder rather than
+        // rendering a player full of undefined fields.
+        setSong(data?.song_id ? data : null);
       });
   };
 
@@ -104,15 +110,14 @@ function Room({ leaveRoomCallback }: RoomProps) {
     if (roomCode) getRoomDetails();
     else console.log("roomCode is undefined, not fetching");
 
-    let interval: ReturnType<typeof setInterval> | null = null;
-    if (spotifyAuth) {
-      getCurrSong();
-      interval = setInterval(getCurrSong, 1000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [roomCode, navigate, leaveRoomCallback, spotifyAuth]);
+    // Everyone polls, guests included. Playback is read server-side with the
+    // host's tokens, so a guest never authorises Spotify — gating this on
+    // spotifyAuth meant guests never asked for the song at all.
+    getCurrSong();
+    const interval = setInterval(getCurrSong, 1000);
+
+    return () => clearInterval(interval);
+  }, [roomCode, navigate, leaveRoomCallback]);
 
   // Settings view: CreateRoom brings its own card, so no extra wrapper here
   if (showSettings) {

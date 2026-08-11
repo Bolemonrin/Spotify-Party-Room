@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button, TextField, Typography, Stack, Paper } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { glassCard, gradientText } from "../theme";
+import { logPress } from "../debug";
 
 function JoinRoom() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function JoinRoom() {
   };
 
   const roomButtonPressed = () => {
+    logPress("join-room", { roomCode });
     const request = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
