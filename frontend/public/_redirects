@@ -1,1 +1,15 @@
-/*    /index.html   200
+# Proxy the API to Render. These are rewrites (status 200), not redirects, so
+# the browser still sees one origin — which keeps the session cookie first-party
+# and sidesteps CORS entirely. Safari blocks third-party cookies by default, so
+# calling Render directly from the browser would break sessions on iOS.
+#
+# Order matters: the SPA catch-all must stay last, or it swallows these.
+/api/*       https://spotify-party-room.onrender.com/api/:splat       200
+/spotify/*   https://spotify-party-room.onrender.com/spotify/:splat   200
+
+# Spotify's OAuth callback. Kept on the Netlify origin so the session cookie set
+# during /spotify/get-auth-url is still attached when the state is verified.
+/callback    https://spotify-party-room.onrender.com/callback         200
+
+# Client-side routes: /room/:code, /join, /create are React Router's, not files.
+/*           /index.html                                              200

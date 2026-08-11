@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import * as spotifyService from "../services/spotifyService.js";
 import { getRoomByCode } from "../services/roomService.js";
 import { randomBytes } from "node:crypto";
+import { frontendUrl } from "../config.js";
 
 type SpotifyTrack = {
   id: string;
@@ -50,7 +51,9 @@ export async function spotifyCallback(req: Request, res: Response) {
       .status(502)
       .json({ message: "Could not exchange authorization code for tokens" });
 
-  res.redirect("/");
+  // In production the callback lands on the API host, so a relative redirect
+  // would strand the user there instead of returning them to the app.
+  res.redirect(frontendUrl);
 }
 
 export async function isAuthenticated(req: Request, res: Response) {
