@@ -12,6 +12,7 @@ import PlayArrow from "@mui/icons-material/PlayArrow";
 import Pause from "@mui/icons-material/Pause";
 import SkipNext from "@mui/icons-material/SkipNext";
 import type { MusicPlayerProps } from "../types";
+import { logPress } from "../debug";
 
 function MusicPlayer({
   artist,
@@ -20,8 +21,12 @@ function MusicPlayer({
   time,
   image_url,
   is_playing,
+  vote_count,
+  votes_required,
+  song_id,
 }: MusicPlayerProps) {
   const pauseSong = () => {
+    logPress("pause", { song_id });
     const req = {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -31,6 +36,7 @@ function MusicPlayer({
   };
 
   const playSong = () => {
+    logPress("play", { song_id });
     const req = {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -40,11 +46,15 @@ function MusicPlayer({
   };
 
   const skipSong = () => {
+    logPress("skip", { song_id, vote_count, votes_required });
     const req = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     };
-    fetch("/spotify/skip", req).then((res) => res.json());
+    fetch("/spotify/skip", req)
+      .then((res) => res.json())
+      .then((data) => logPress("skip:response", data))
+      .catch(() => {});
   };
 
   const btnControl = () => {
@@ -89,6 +99,13 @@ function MusicPlayer({
             <IconButton onClick={skipSong} color="secondary">
               <SkipNext />
             </IconButton>
+            <Typography
+              component="span"
+              variant="caption"
+              sx={{ color: "text.secondary", ml: 0.5 }}
+            >
+              {vote_count} / {votes_required} votes to skip
+            </Typography>
           </Box>
         </Grid>
       </Grid>

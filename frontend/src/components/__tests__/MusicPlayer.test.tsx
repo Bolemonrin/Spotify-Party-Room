@@ -26,6 +26,15 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+/** The first non-debug request. logPress posts to /api/debug/press first. */
+function spotifyCall() {
+  const call = vi
+    .mocked(fetch)
+    .mock.calls.find(([url]) => !String(url).startsWith("/api/debug/"));
+  if (!call) throw new Error("no Spotify request was made");
+  return call;
+}
+
 describe("MusicPlayer", () => {
   it("renders the track title and artist", () => {
     render(<MusicPlayer {...song} />);
@@ -39,7 +48,7 @@ describe("MusicPlayer", () => {
 
     await userEvent.click(screen.getAllByRole("button")[1]!);
 
-    const [url, options] = vi.mocked(fetch).mock.calls[0]!;
+    const [url, options] = spotifyCall();
     expect(url).toBe("/spotify/skip");
     expect(options).toMatchObject({ method: "POST" });
   });
@@ -49,7 +58,7 @@ describe("MusicPlayer", () => {
 
     await userEvent.click(screen.getAllByRole("button")[0]!);
 
-    const [url, options] = vi.mocked(fetch).mock.calls[0]!;
+    const [url, options] = spotifyCall();
     expect(url).toBe("/spotify/song_control");
     expect(JSON.parse(String((options as RequestInit).body))).toEqual({
       action: "pause",
@@ -61,7 +70,7 @@ describe("MusicPlayer", () => {
 
     await userEvent.click(screen.getAllByRole("button")[0]!);
 
-    const [, options] = vi.mocked(fetch).mock.calls[0]!;
+    const [, options] = spotifyCall();
     expect(JSON.parse(String((options as RequestInit).body))).toEqual({
       action: "play",
     });

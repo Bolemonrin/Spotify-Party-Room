@@ -18,6 +18,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import type { CreateRoomProps } from "../types";
 import { glassCard, gradientText } from "../theme";
+import { logPress } from "../debug";
 
 function CreateRoom({
   update,
@@ -43,6 +44,7 @@ function CreateRoom({
   };
 
   const handleRoomBtnPresses = () => {
+    logPress("create-room", { votesToSkip, guestControl });
     localStorage.removeItem("roomCode");
     const request = {
       method: "POST",
@@ -67,6 +69,7 @@ function CreateRoom({
   };
 
   const handleUpdateRoomBtnPress = () => {
+    logPress("update-room", { roomCode, votesToSkip, guestControl });
     const request = {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
